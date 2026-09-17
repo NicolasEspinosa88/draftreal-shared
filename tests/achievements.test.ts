@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ACHIEVEMENT_COLOR_TOKENS,
   ACHIEVEMENT_TYPES,
-  ACHIEVEMENT_TYPE_BADGE_COLORS,
-  ACHIEVEMENT_TYPE_DEFAULT_COLOR,
+  ACHIEVEMENT_TYPE_COLOR_TOKEN,
   ACHIEVEMENT_TYPE_LABELS,
   ALL_ACHIEVEMENT_TYPE_LABELS,
   TEAM_ONLY_ACHIEVEMENT_TYPES,
-  achievementTypeBadgeColor,
+  achievementColorToken,
 } from '../src/achievements/index.js';
 
 describe('achievement type labels', () => {
@@ -20,22 +20,29 @@ describe('achievement type labels', () => {
   });
 });
 
-describe('achievementTypeBadgeColor', () => {
-  it('returns the mapped hex color for a known type', () => {
-    expect(achievementTypeBadgeColor('championship')).toBe('#FBBF24');
+describe('achievementColorToken', () => {
+  it('returns the mapped semantic token for a known type', () => {
+    expect(achievementColorToken('championship')).toBe('amber');
   });
 
-  it('returns the brand orange for award, not a generic Tailwind shade', () => {
-    expect(achievementTypeBadgeColor('award')).toBe('#E24B03');
+  it('returns the brand token for award, not a generic color family', () => {
+    expect(achievementColorToken('award')).toBe('brand');
   });
 
-  it('falls back to the default color for an unknown type', () => {
-    expect(achievementTypeBadgeColor('some_future_type')).toBe(ACHIEVEMENT_TYPE_DEFAULT_COLOR);
+  it('returns undefined for an unknown type, leaving the fallback to each app', () => {
+    expect(achievementColorToken('some_future_type')).toBeUndefined();
   });
 
-  it('every declared achievement type has an explicit color entry', () => {
+  it('every declared achievement type has an explicit, valid token', () => {
     for (const type of ACHIEVEMENT_TYPES) {
-      expect(ACHIEVEMENT_TYPE_BADGE_COLORS[type]).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(ACHIEVEMENT_COLOR_TOKENS).toContain(ACHIEVEMENT_TYPE_COLOR_TOKEN[type]);
+    }
+  });
+
+  it('is presentation-agnostic: no hex or Tailwind class ever leaks out of this module', () => {
+    for (const token of Object.values(ACHIEVEMENT_TYPE_COLOR_TOKEN)) {
+      expect(token).not.toMatch(/^#/);
+      expect(token).not.toMatch(/^text-/);
     }
   });
 });

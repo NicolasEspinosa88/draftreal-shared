@@ -1,15 +1,17 @@
 /**
- * Achievement type labels + badge colors — the exact pure mappings web keeps
- * in `src/lib/highlight-achievements.ts` (labels) and
+ * Achievement type labels + color semantics — the pure mappings web keeps in
+ * `src/lib/highlight-achievements.ts` (labels) and
  * `src/lib/achievement-display.ts` (colors), duplicated verbatim (and with
  * risk of silent drift, per its own "keep in sync" comment) in mobile's
  * `constants/labels.ts` before this package existed.
  *
- * Colors are hex, not Tailwind classes: web's originals are Tailwind color
- * tokens (`text-amber-400`, etc.) resolved here to their real hex value so
- * both a DOM `style` and a React Native `style` can consume the same
- * constant. `award` keeps DraftReal's own brand orange (`#E24B03`, web's
- * `text-primary` / `--dr-naranja`) instead of a generic Tailwind shade.
+ * Colors are a *semantic token* (`'amber' | 'blue' | ...`), not a hex value
+ * or a Tailwind class — this package stays presentation-agnostic. Each app
+ * owns its own token -> visual mapping: web resolves a token to its
+ * `text-{token}-400` Tailwind class (see `src/lib/achievement-display.ts`),
+ * mobile resolves it to a hex constant (see `constants/labels.ts`). Neither
+ * mapping lives here, so this package never has to know what Tailwind or
+ * React Native styling looks like.
  */
 
 export const ACHIEVEMENT_TYPES = [
@@ -67,24 +69,49 @@ export const ACHIEVEMENT_OWNER_FILTER_LABELS: Record<string, string> = {
 export const ACHIEVEMENT_STATUSES = ['draft', 'pending_review', 'published', 'rejected', 'archived', 'hidden'] as const;
 export type AchievementStatus = (typeof ACHIEVEMENT_STATUSES)[number];
 
-/** Default color for a type not present in the map — web's own `text-white` fallback. */
-export const ACHIEVEMENT_TYPE_DEFAULT_COLOR = '#ECE6E6';
+/**
+ * The semantic color families both apps' real designs already agree on
+ * (confirmed against web's `ACHIEVEMENT_TYPE_LABEL_COLOR` Tailwind classes
+ * and mobile's now-removed hex map — every value below matched exactly
+ * before this refactor, e.g. web's `text-amber-400` === mobile's `#FBBF24`).
+ * `brand` is the one non-Tailwind-family token: DraftReal's own orange
+ * (web's `text-primary`, mobile's `colors.primary`), not a generic shade.
+ */
+export const ACHIEVEMENT_COLOR_TOKENS = [
+  'amber',
+  'brand',
+  'blue',
+  'emerald',
+  'purple',
+  'cyan',
+  'teal',
+  'orange',
+  'pink',
+  'yellow',
+  'indigo',
+] as const;
+export type AchievementColorToken = (typeof ACHIEVEMENT_COLOR_TOKENS)[number];
 
-export const ACHIEVEMENT_TYPE_BADGE_COLORS: Record<AchievementType, string> = {
-  championship: '#FBBF24',
-  award: '#E24B03',
-  milestone: '#60A5FA',
-  standout_game: '#34D399',
-  video_highlight: '#C084FC',
-  new_team: '#22D3EE',
-  qualification: '#2DD4BF',
-  promotion: '#FB923C',
-  signing: '#F472B6',
-  team_milestone: '#FACC15',
-  team_achievement: '#818CF8',
+export const ACHIEVEMENT_TYPE_COLOR_TOKEN: Record<AchievementType, AchievementColorToken> = {
+  championship: 'amber',
+  award: 'brand',
+  milestone: 'blue',
+  standout_game: 'emerald',
+  video_highlight: 'purple',
+  new_team: 'cyan',
+  qualification: 'teal',
+  promotion: 'orange',
+  signing: 'pink',
+  team_milestone: 'yellow',
+  team_achievement: 'indigo',
 };
 
-/** `ACHIEVEMENT_TYPE_BADGE_COLORS[type]`, falling back to `ACHIEVEMENT_TYPE_DEFAULT_COLOR` for any unknown/legacy type. */
-export function achievementTypeBadgeColor(type: string): string {
-  return (ACHIEVEMENT_TYPE_BADGE_COLORS as Record<string, string>)[type] ?? ACHIEVEMENT_TYPE_DEFAULT_COLOR;
+/**
+ * `ACHIEVEMENT_TYPE_COLOR_TOKEN[type]`, or `undefined` for a type not in the
+ * map (an unrecognized/legacy DB value). Each app picks its own fallback
+ * visual for that case — this package has no opinion on what "default"
+ * looks like.
+ */
+export function achievementColorToken(type: string): AchievementColorToken | undefined {
+  return (ACHIEVEMENT_TYPE_COLOR_TOKEN as Record<string, AchievementColorToken>)[type];
 }
