@@ -1,6 +1,6 @@
 {
   "name": "@draftreal/shared",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Pure TypeScript domain rules shared between DraftReal Web and DraftReal Mobile (enums, validation, achievements, stats). No React, no React Native, no DOM, no secrets.",
   "private": true,
   "type": "module",
@@ -25,6 +25,10 @@
     "./stats": {
       "types": "./dist/stats/index.d.ts",
       "import": "./dist/stats/index.js"
+    },
+    "./messaging": {
+      "types": "./dist/messaging/index.d.ts",
+      "import": "./dist/messaging/index.js"
     }
   },
   "files": [

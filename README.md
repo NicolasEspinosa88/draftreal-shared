@@ -39,6 +39,7 @@ labels and colors were hand-copied between repos).
 | `@draftreal/shared/validation` | Player height/weight range validation (140–240 cm, 40–180 kg — confirmed against web's real form bounds), calendar-date validation |
 | `@draftreal/shared/achievements` | Achievement type labels, owner-filter labels, and badge colors (hex, not Tailwind classes) |
 | `@draftreal/shared/stats` | The 8-axis "Perfil estadístico" radar calculation (pure — no chart library, no SVG rendering beyond a plain polygon-points string) |
+| `@draftreal/shared/messaging` | Message content validation (2000-char limit), conversation/message domain enums, and staff message access rules — for the `conversations`/`messages` system only (not the separate `staff_application_conversations` system) |
 
 ## Consuming this package
 
